@@ -122,6 +122,7 @@ func TestDBGORM_Delete(t *testing.T) {
 		log.Fatalf("Данные не Удалены")
 	}
 }
+
 func TestDBGORM_Exec(t *testing.T) {
 	db := New()
 
@@ -138,6 +139,7 @@ func TestDBGORM_Exec(t *testing.T) {
 		log.Fatalf("Непроизашло ни одного изменения")
 	}
 }
+
 func TestDBGORM_ExecGet(t *testing.T) {
 	db := New()
 
@@ -156,4 +158,28 @@ func TestDBGORM_ExecGet(t *testing.T) {
 	if *row == 0 {
 		log.Fatalf("Непроизашло ни одного изменения")
 	}
+}
+
+func TestDBGORM_GetPaginatedResult(t *testing.T) {
+	db := New()
+
+	db.Connect("localhost", "5433", "loyalty", "loyalty", "loyalty", "disable")
+
+	err := db.CustomAutoMigrate(&Model{})
+
+	var models []Model
+	err = db.GetAll(&models)
+
+	if err != nil {
+		log.Fatalf("Данные не получены")
+	}
+
+	result, err := db.GetPaginatedResultFromSlice(models, 1, 10)
+	if err != nil {
+		log.Fatalf("Пагинация не прошла: %s", err.Error())
+	}
+
+	log.Printf("Total: %d", result.total)
+	log.Printf("Page: %d", result.page)
+	log.Printf("Limit: %d", result.limit)
 }

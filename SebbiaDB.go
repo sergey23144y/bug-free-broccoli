@@ -10,6 +10,13 @@ import (
 	"time"
 )
 
+type PaginatedResult struct {
+	total int
+	limit int
+	page  int
+	list  []interface{}
+}
+
 type sebbiaDB interface {
 	CustomAutoMigrate(dst interface{}) error
 	Connect(Host, Port, Username, Password, DBName, SSLMode string) error // Метод который создает подключение к бд
@@ -19,7 +26,9 @@ type sebbiaDB interface {
 	Update(dest interface{}, id interface{}) error                        // Запрос ны изменение одного элеммента таблицы
 	Delete(dest interface{}, id interface{}, softDelete bool) error
 	Exec(query string, value ...interface{}) (*int64, error)
-	ExecGet(query string, dest interface{}, value ...interface{}) (*int64, error) // Запрос ны удаление одного элемента  таблицы
+	ExecGet(query string, dest interface{}, value ...interface{}) (*int64, error)
+	GetPaginatedResult(db *gorm.DB, query *gorm.DB, page, limit int) (*PaginatedResult, error) // Запрос ны удаление одного элемента  таблицы
+	GetPaginatedResultFromSlice(data interface{}, page, limit int) (*PaginatedResult, error)
 }
 
 func New() sebbiaDB {
