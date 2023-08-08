@@ -1,4 +1,4 @@
-package test
+package SebbiaDB
 
 import (
 	"gorm.io/gorm"

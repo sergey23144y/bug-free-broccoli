@@ -1,4 +1,4 @@
-package test
+package SebbiaDB
 
 import (
 	"github.com/sunary/sqlize"
@@ -7,22 +7,25 @@ import (
 
 func (d *DBGORM) Migrate(agrs ...interface{}) {}
 
-func (d *DBGORM) createSQLFileMigration(path string, args ...interface{}) error {
+func (d *DBGORM) CreateSQLFileMigration(path string, args ...interface{}) error {
 	newMigration := sqlize.NewSqlize(sqlize.WithSqlTag("psql"), sqlize.WithMigrationFolder(""))
-	_ = newMigration.FromObjects(args)
 
-	f, err := os.Create(path)
+	for i := 0; i < len(args); i++ {
+		_ = newMigration.FromObjects(args[i])
 
-	if err != nil {
-		return err
-	}
+		f, err := os.Create(path)
 
-	defer f.Close()
+		if err != nil {
+			return err
+		}
 
-	_, err2 := f.WriteString(newMigration.StringUp() + "\n")
+		defer f.Close()
 
-	if err2 != nil {
-		return err
+		_, err2 := f.WriteString(newMigration.StringUp() + "\n")
+
+		if err2 != nil {
+			return err
+		}
 	}
 
 	return nil
