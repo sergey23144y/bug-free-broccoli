@@ -1,7 +1,6 @@
 package test
 
 import (
-	"errors"
 	"fmt"
 	"gorm.io/driver/postgres"
 	gorm "gorm.io/gorm"
@@ -18,7 +17,8 @@ type sebbiaDB interface {
 	GetAll(dest interface{}) error                                        // Запрос ны вывод всей таблицы
 	GetById(dest interface{}, id interface{}) error                       // Запрос ны вывод одного элемента таблицы
 	Update(dest interface{}, id interface{}) error                        // Запрос ны изменение одного элеммента таблицы
-	Delete(dest interface{}, id interface{}) error                        // Запрос ны удаление одного элемента  таблицы
+	Delete(dest interface{}, id interface{}, softDelete bool) error
+	Exec(query string, value ...interface{}) (*int64, error) // Запрос ны удаление одного элемента  таблицы
 }
 
 func New() sebbiaDB {
@@ -38,6 +38,15 @@ func (D *DBGORM) CustomAutoMigrate(dst interface{}) error {
 	log.Println("Все ок")
 
 	return nil
+}
+func (D *DBGORM) Exec(query string, value ...interface{}) (*int64, error) {
+
+	result := D.db.Exec(query, value)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &result.RowsAffected, nil
 }
 
 type Config struct {
@@ -82,54 +91,4 @@ func (D *DBGORM) Connect(Host, Port, Username, Password, DBName, SSLMode string)
 		time.Sleep(3 * time.Second)
 	}
 
-}
-
-func (D *DBGORM) Insert(input interface{}) error {
-	id := D.db.Create(input)
-	return id.Error
-}
-
-func (D *DBGORM) GetAll(dest interface{}) error {
-	result := D.db.Find(dest)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("Ошибка 0 полей ")
-	}
-	return nil
-}
-
-func (D *DBGORM) GetById(dest interface{}, id interface{}) error {
-	result := D.db.Where("ID = ?", id).Find(dest)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("Ошибка 0 полей ")
-	}
-	return nil
-}
-
-func (D *DBGORM) Update(dest interface{}, id interface{}) error {
-	result := D.db.Model(dest).Where("ID = ?", id).Updates(dest)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("Ошибка 0 полей ")
-	}
-	return nil
-
-}
-
-func (D *DBGORM) Delete(dest interface{}, id interface{}) error {
-	result := D.db.Model(dest).Where("ID = ?", id).Delete(id)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("Ошибка 0 полей ")
-	}
-	return nil
 }
