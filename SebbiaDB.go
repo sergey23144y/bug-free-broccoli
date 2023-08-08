@@ -19,11 +19,11 @@ type PaginatedResult struct {
 
 type sebbiaDB interface {
 	CustomAutoMigrate(dst interface{}) error
-	Connect(Host, Port, Username, Password, DBName, SSLMode string) error // Метод который создает подключение к бд
-	Insert(input interface{}) error                                       // Запрос на внесение данных
-	GetAll(dest interface{}) error                                        // Запрос ны вывод всей таблицы
-	GetById(dest interface{}, id interface{}) error                       // Запрос ны вывод одного элемента таблицы
-	Update(dest interface{}, id interface{}) error                        // Запрос ны изменение одного элеммента таблицы
+	Connect(Host, Port, Username, Password, DBName, SSLMode string, loggering bool) error // Метод который создает подключение к бд
+	Insert(input interface{}) error                                                       // Запрос на внесение данных
+	GetAll(dest interface{}) error                                                        // Запрос ны вывод всей таблицы
+	GetById(dest interface{}, id interface{}) error                                       // Запрос ны вывод одного элемента таблицы
+	Update(dest interface{}, id interface{}) error                                        // Запрос ны изменение одного элеммента таблицы
 	Delete(dest interface{}, id interface{}, softDelete bool) error
 	Exec(query string, value ...interface{}) (*int64, error)
 	ExecGet(query string, dest interface{}, value ...interface{}) (*int64, error)
@@ -79,15 +79,18 @@ type Config struct {
 }
 
 // Connect подключение базы данных
-func (D *DBGORM) Connect(Host, Port, Username, Password, DBName, SSLMode string) error {
-	newLogger := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags), // Установите свой log.Logger
-		logger.Config{
-			SlowThreshold: time.Second, // Порог для медленных запросов
-			LogLevel:      logger.Info, // Уровень логирования
-			Colorful:      true,        // Включить цветной вывод
-		},
-	)
+func (D *DBGORM) Connect(Host, Port, Username, Password, DBName, SSLMode string, loggering bool) error {
+	var newLogger logger.Interface
+	if loggering {
+		newLogger = logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags), // Установите свой log.Logger
+			logger.Config{
+				SlowThreshold: time.Second, // Порог для медленных запросов
+				LogLevel:      logger.Info, // Уровень логирования
+				Colorful:      true,        // Включить цветной вывод
+			},
+		)
+	}
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		Host, Port, Username, DBName, Password, SSLMode)
