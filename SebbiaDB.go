@@ -18,7 +18,8 @@ type sebbiaDB interface {
 	GetById(dest interface{}, id interface{}) error                       // Запрос ны вывод одного элемента таблицы
 	Update(dest interface{}, id interface{}) error                        // Запрос ны изменение одного элеммента таблицы
 	Delete(dest interface{}, id interface{}, softDelete bool) error
-	Exec(query string, value ...interface{}) (*int64, error) // Запрос ны удаление одного элемента  таблицы
+	Exec(query string, value ...interface{}) (*int64, error)
+	ExecGet(query string, dest interface{}, value ...interface{}) (*int64, error) // Запрос ны удаление одного элемента  таблицы
 }
 
 func New() sebbiaDB {
@@ -39,6 +40,16 @@ func (D *DBGORM) CustomAutoMigrate(dst interface{}) error {
 
 	return nil
 }
+func (D *DBGORM) ExecGet(query string, dest interface{}, value ...interface{}) (*int64, error) {
+
+	result := D.db.Raw(query, value).Scan(dest)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &result.RowsAffected, nil
+}
+
 func (D *DBGORM) Exec(query string, value ...interface{}) (*int64, error) {
 
 	result := D.db.Exec(query, value)

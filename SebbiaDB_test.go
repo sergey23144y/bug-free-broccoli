@@ -129,11 +129,30 @@ func TestDBGORM_Exec(t *testing.T) {
 
 	err := db.CustomAutoMigrate(&Model{})
 
-	row, err := db.Exec("DELETE FROM \"models\" WHERE \"models\".\"id\" = ?", 5)
+	row, err := db.Exec("DELETE FROM \"models\" WHERE \"models\".\"id\" = ?", 6)
 
 	if err != nil {
 		log.Fatalf("Данные не Удалены")
 	}
+	if *row == 0 {
+		log.Fatalf("Непроизашло ни одного изменения")
+	}
+}
+func TestDBGORM_ExecGet(t *testing.T) {
+	db := New()
+
+	db.Connect("localhost", "5433", "loyalty", "loyalty", "loyalty", "disable")
+
+	err := db.CustomAutoMigrate(&Model{})
+	var model Model
+	row, err := db.ExecGet("SELECT * FROM \"models\" WHERE ID = ? AND \"models\".\"deleted_at\" IS NULL", &model, 25)
+
+	if err != nil {
+		log.Fatalf("Данные не получены")
+	}
+
+	log.Printf("Параметр имя: %s", model.Name)
+
 	if *row == 0 {
 		log.Fatalf("Непроизашло ни одного изменения")
 	}
