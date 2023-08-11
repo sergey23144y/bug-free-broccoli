@@ -20,6 +20,7 @@ type sebbiaDB interface {
 	Delete(dest interface{}, id interface{}, softDelete bool) error
 	Exec(query string, value ...interface{}) (*int64, error)
 	ExecGet(query string, dest interface{}, value ...interface{}) (*int64, error) // Запрос ны удаление одного элемента  таблицы
+	Migrate(args ...interface{}) error
 	CreateSQLFileMigration(path string, args ...interface{}) error
 }
 
