@@ -1,4 +1,4 @@
-package github
+package SebbiaDB
 
 import (
 	"gorm.io/gorm"
@@ -22,7 +22,6 @@ func TestDBGORM_Connect(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Миграция не прошла")
 	}
-
 }
 
 func TestDBGORM_Insert(t *testing.T) {

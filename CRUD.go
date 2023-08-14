@@ -1,4 +1,6 @@
-package github
+
+package SebbiaDB
+
 
 import (
 	"errors"

@@ -1,4 +1,6 @@
-package github
+
+package SebbiaDB
+
 
 import (
 	"fmt"
@@ -26,8 +28,9 @@ type sebbiaDB interface {
 	Update(dest interface{}, id interface{}) error                                        // Запрос ны изменение одного элеммента таблицы
 	Delete(dest interface{}, id interface{}, softDelete bool) error
 	Exec(query string, value ...interface{}) (*int64, error)
+	Migrate(args ...interface{}) error
+	CreateSQLFileMigration(path string, args ...interface{}) error
 	ExecGet(query string, dest interface{}, value ...interface{}) (*int64, error)
-	GetPaginatedResult(db *gorm.DB, query *gorm.DB, page, limit int) (*PaginatedResult, error) // Запрос ны удаление одного элемента  таблицы
 	GetPaginatedResultFromSlice(data interface{}, page, limit int) (*PaginatedResult, error)
 }
 
