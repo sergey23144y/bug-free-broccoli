@@ -1,8 +1,13 @@
 module github.com/sebbia/DB-todos
 
-go 1.20
 
-require gorm.io/driver/postgres v1.5.2
+go 1.21rc4
+
+
+require (
+	gorm.io/driver/postgres v1.5.2
+	gorm.io/gorm v1.25.0
+)
 
 require (
 	github.com/auxten/postgresql-parser v1.0.0 // indirect
@@ -41,6 +46,7 @@ require (
 )
 
 require (
+
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.3.1 // indirect
@@ -49,4 +55,8 @@ require (
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
 	gorm.io/gorm v1.25.0
+	github.com/stretchr/testify v1.8.4 // indirect
+	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/text v0.11.0 // indirect
+
 )
