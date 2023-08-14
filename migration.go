@@ -84,3 +84,27 @@ func (d *DBGORM) addForeignKey(table interface{}) (foreignKey string) {
 
 	return
 }
+
+// MigrateData принимает на вход путь к sql файлу. После чего производит внос данных в базу данных.
+func (d *DBGORM) MigrateData(path string) error {
+	// чтение файла, по пути, который передал пользователь
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	// т.к в конце каждого sql запроса должна находиться ;
+	// то будет производить разделение по ней
+	// и уже в цикле отправлять по одному запросу.
+	// это сделано из-за того, что gorm в одном exec
+	// не может отправлять и обрабатывать несколько запросов.
+	splitData := strings.Split(string(data), ";")
+	for i := 0; i < len(splitData); i++ {
+		_, err = d.Exec(splitData[i], nil)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

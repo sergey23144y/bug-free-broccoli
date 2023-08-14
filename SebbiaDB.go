@@ -1,6 +1,4 @@
-
 package SebbiaDB
-
 
 import (
 	"fmt"
@@ -32,6 +30,7 @@ type sebbiaDB interface {
 	CreateSQLFileMigration(path string, args ...interface{}) error
 	ExecGet(query string, dest interface{}, value ...interface{}) (*int64, error)
 	GetPaginatedResultFromSlice(data interface{}, page, limit int) (*PaginatedResult, error)
+	MigrateData(path string) error
 }
 
 func New() sebbiaDB {
@@ -39,7 +38,8 @@ func New() sebbiaDB {
 }
 
 type DBGORM struct {
-	db *gorm.DB
+	db     *gorm.DB
+	Config Config
 }
 
 func (D *DBGORM) CustomAutoMigrate(dst interface{}) error {
@@ -62,9 +62,10 @@ func (D *DBGORM) ExecGet(query string, dest interface{}, value ...interface{}) (
 	return &result.RowsAffected, nil
 }
 
+// TODO: Подумать по поводу value. Т.к если пользователь не указывает value, то появляется ошибка
 func (D *DBGORM) Exec(query string, value ...interface{}) (*int64, error) {
 
-	result := D.db.Exec(query, value)
+	result := D.db.Exec(query)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -84,6 +85,11 @@ type Config struct {
 // Connect подключение базы данных
 func (D *DBGORM) Connect(Host, Port, Username, Password, DBName, SSLMode string, loggering bool) error {
 	var newLogger logger.Interface
+	D.Config.Host = Host
+	D.Config.Port = Port
+	D.Config.Username = Username
+	D.Config.Password = Password
+	D.Config.DBName = DBName
 	if loggering {
 		newLogger = logger.New(
 			log.New(os.Stdout, "\r\n", log.LstdFlags), // Установите свой log.Logger

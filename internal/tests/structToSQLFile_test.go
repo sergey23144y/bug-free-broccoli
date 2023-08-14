@@ -28,7 +28,7 @@ type Ticket struct {
 
 func TestStructToSQLFile(t *testing.T) {
 	db := SebbiaDB.New()
-	db.Connect("localhost", "5433", "loyalty", "loyalty", "loyalty", "disable")
+	db.Connect("localhost", "5433", "loyalty", "loyalty", "loyalty", "disable", true)
 	db.Migrate(User{}, Product{}, Ticket{})
 	db.CreateSQLFileMigration("./test_migration/test_00001_init_up.sql", Product{}, Ticket{}, User{})
 
